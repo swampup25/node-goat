@@ -49,6 +49,13 @@ jobs:
           jfrog --version
           jfrog rt ping
           jfrog config show
+      - name: Set JF NPM Config
+        run:  |
+          jfrog npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
+          jfrog npm config set registry ${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/
+          jfrog npm config list | jq -r .registry
+        env:
+          JF_URL: https://${{ vars.JF_URL }}
       - name: JFrog Curation audit 🐸
         run: |
           jf curation-audit
@@ -60,13 +67,6 @@ jobs:
           jfrog audit --sast --fail false
       - name: Capture build version
         run: echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
-      - name: Set JF NPM Config
-        run:  |
-          jfrog npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
-          jfrog npm config set registry ${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/
-          jfrog npm config list | jq -r .registry
-        env:
-          JF_URL: https://${{ vars.JF_URL }}
       - name: Install NPM dependencies
         run: |
           jfrog npm ci --ignore-scripts --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project $JF_PROJECT
