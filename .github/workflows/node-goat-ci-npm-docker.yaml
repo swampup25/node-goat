@@ -60,7 +60,7 @@ jobs:
           JF_URL: https://${{ vars.JF_URL }}
       - name: JFrog Curation audit 🐸
         run: |
-          jf curation-audit
+          jf curation-audit --threads 6
       - name: JFrog audit - Secrets 🔑🐸
         run: |
           jfrog audit --secrets
@@ -90,7 +90,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
       - name: JFrog docker image scan 🐳🐸
         run: |
-          jfrog docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json
+          jfrog docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json --threads 6
         env:
           JF_URL: ${{ vars.JF_URL }}
       - name: Docker Push 🐳🐸
@@ -107,4 +107,4 @@ jobs:
       - name: JFrog build scan 🐸
         run: |
           sleep 60
-          jfrog bs $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER --project $JF_PROJECT --vuln=true --format json
+          jfrog bs $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER --project $JF_PROJECT --vuln=true --format json --threads 6

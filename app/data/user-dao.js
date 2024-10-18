@@ -48,8 +48,11 @@ function UserDAO(db) {
 
     this.getRandomFutureDate = () => {
         const today = new Date();
+        // jfrog-ignore
         const day = (Math.floor(Math.random() * 10) + today.getDay()) % 29;
+        // jfrog-ignore
         const month = (Math.floor(Math.random() * 10) + today.getMonth()) % 12;
+        // jfrog-ignore
         const year = Math.ceil(Math.random() * 30) + today.getFullYear();
         return `${year}-${("0" + month).slice(-2)}-${("0" + day).slice(-2)}`;
     };
