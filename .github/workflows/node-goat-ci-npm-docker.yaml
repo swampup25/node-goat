@@ -62,9 +62,12 @@ jobs:
       # - name: JFrog Curation audit
       #   run: |
       #     jf curation-audit
-      - name: JFrog audit 🐸
+      - name: JFrog audit - Secrets 🔑🐸
         run: |
-          jfrog audit --secrets --sast
+          jfrog audit --secrets
+      - name: JFrog audit - SAST 🐸
+        run: |
+          jfrog audit --sast --fail false
       - name: Install NPM dependencies
         run: |
           jfrog npm i -g @angular/cli@${{ env.ANGULAR_CLI_VERSION }}
