@@ -110,33 +110,7 @@ The repo includes the Dockerfile and docker-compose.yml necessary to set up the 
    ```
    docker-compose up
    ```
-
-### OPTION 3 - Deploy to Heroku
-
-This option uses a free ($0/month) Heroku node server.
-
-Though not essential, it is recommended that you fork this repository and deploy the forked repo.
-This will allow you to fix vulnerabilities in your own forked version, then deploy and test it on Heroku.
-
-1) Set up a publicly accessible MongoDB instance:
-   1) [Deploy a MongoDB Atlas free tier cluster](https://docs.atlas.mongodb.com/tutorial/deploy-free-tier-cluster/) (M0 Sandbox)
-   2) [Enable network access](https://docs.atlas.mongodb.com/security/ip-access-list/#add-ip-access-list-entries) to the cluster from anywhere (CIDR range 0.0.0.0/0)
-   3) [Add a database user](https://docs.atlas.mongodb.com/tutorial/create-mongodb-user-for-cluster/) to the cluster
-
-2) Deploy NodeGoat to Heroku by clicking the button below:
-
-   [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-   In the Create New App dialog, set the `MONGODB_URI` config var to the connection string of your MongoDB Atlas cluster.
-   This can be viewed in the cluster's [connect dialog](https://docs.atlas.mongodb.com/tutorial/connect-to-your-cluster/#connect-to-your-atlas-cluster).
-   Select "Connect your application", set the driver to "Node.js" and the version to "2.2.12 or later".
-   This will give a connection string in the form:
-   ```
-   mongodb://<username>:<password>@<cluster>/<dbname>?ssl=true&replicaSet=<rsname>&authSource=admin&retryWrites=true&w=majority
-   ```
-   The `<username>` and `<password>` fields need filling in with the details of the database user added earlier. The `<dbname>` field sets the name of the
-   database nodegoat will use in the cluster (eg "nodegoat"). The other fields will already be filled in with the correct details for your cluster.
-
+   
 ## Report bugs, Feedback, Comments
 
 *  Open a new [issue](https://github.com/OWASP/NodeGoat/issues) or contact team by joining chat at [Slack](https://owasp.slack.com/messages/project-nodegoat/) or [![Join the chat at https://gitter.im/OWASP/NodeGoat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OWASP/NodeGoat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
