@@ -197,3 +197,4 @@ dist
 
 # Jfrog config
 .jfrog
+*.backup
