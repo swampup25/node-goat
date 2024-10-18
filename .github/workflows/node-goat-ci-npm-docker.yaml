@@ -49,9 +49,9 @@ jobs:
           jfrog --version
           jfrog rt ping
           jfrog config show
-      # - name: JFrog Curation audit
-      #   run: |
-      #     jf curation-audit
+      - name: JFrog Curation audit 🐸
+        run: |
+          jf curation-audit
       - name: JFrog audit - Secrets 🔑🐸
         run: |
           jfrog audit --secrets
