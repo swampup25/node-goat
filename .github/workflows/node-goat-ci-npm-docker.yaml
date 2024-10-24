@@ -58,15 +58,15 @@ jobs:
           jfrog npm config list | jq -r .registry
         env:
           JF_URL: https://${{ vars.JF_URL }}
-      # - name: JFrog Curation audit 🐸
-      #   run: |
-      #     jf curation-audit --threads 6
-      # - name: JFrog audit - Secrets 🔑🐸
-      #   run: |
-      #     jfrog audit --secrets
-      # - name: JFrog audit - SAST 🐸
-      #   run: |
-      #     jfrog audit --sast --fail false
+      - name: JFrog Curation audit 🐸
+        run: |
+          jf curation-audit --threads 6
+      - name: JFrog audit - Secrets 🔑🐸
+        run: |
+          jfrog audit --secrets
+      - name: JFrog audit - SAST 🐸
+        run: |
+          jfrog audit --sast --fail false
       - name: Capture build version
         run: echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
       - name: Install NPM dependencies
