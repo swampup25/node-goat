@@ -12,12 +12,12 @@ steps:
 
 - task: JfrogCliV2@1
   inputs:
-    jfrogPlatformConnection: 'jf-rk-soleng'
+    jfrogPlatformConnection: 'jf-platform-rk'
     command: 'jf rt ping'
 
 - task: JFrogAudit@1
   inputs:
-    xrayConnection: 'jf-rk-soleng-xr'
+    xrayConnection: 'jf-xr-rk'
     watchesSource: 'project'
     project: 'frogs-us'
     allowFailBuild: true
@@ -25,7 +25,7 @@ steps:
 - task: JFrogNpm@1
   inputs:
     command: 'ci'
-    artifactoryConnection: 'jf-rk-soleng-rt'
+    artifactoryConnection: 'jf-rt-rk'
     sourceRepo: 'frogs-npm-dev-virtual'
     collectBuildInfo: true
     threads: '1'
@@ -34,26 +34,23 @@ steps:
     projectKey: 'frogs-us'
     includeEnvVars: true
 
-- task: Docker@2
+- task: JFrogNpm@1
   inputs:
-    containerRegistry: 'jf-rk-soleng-docker'
-    repository: '${TARGET_DOCKER_REPO}/node-goat'
-    command: 'build'
-    Dockerfile: '**/Dockerfile'
-
-- task: JFrogDocker@1
-  inputs:
-    command: 'Scan'
-    xrayConnection: 'jf-rk-soleng-xr'
-    imageName: '$(JF_URL)/$(TARGET_DOCKER_REPO)/node-goat:$(Build.BuildNumber)'
-    watchesSource: 'project'
-    project: 'frogs-us'
-    allowFailBuild: true
-    allowBypassArchiveLimits: false
-    threads: '3'
-    skipLogin: false'
+    command: 'pack and publish'
+    artifactoryConnection: 'jf-rt-rk'
+    targetRepo: 'frogs-npm-dev-virtual'
+    collectBuildInfo: true
+    buildName: '$(Build.DefinitionName)'
+    buildNumber: '$(Build.BuildNumber)'
     projectKey: 'frogs-us'
     includeEnvVars: true
+
+- task: JFrogPublishBuildInfo@1
+  inputs:
+    artifactoryConnection: 'jf-rt-rk'
+    buildName: '$(Build.DefinitionName)'
+    buildNumber: '$(Build.BuildNumber)'
+    projectKey: 'frogs-us'
 
 - task: CmdLine@2
   inputs:
@@ -61,7 +58,7 @@ steps:
 
 - task: JFrogBuildScan@1
   inputs:
-    xrayConnection: 'jf-rk-soleng-xr'
+    xrayConnection: 'jf-xr-rk'
     buildName: '$(Build.DefinitionName)'
     buildNumber: '$(Build.BuildNumber)'
     projectKey: 'frogs-us'
