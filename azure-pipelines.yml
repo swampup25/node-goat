@@ -1,0 +1,69 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- task: JfrogCliV2@1
+  inputs:
+    jfrogPlatformConnection: 'jf-rk-soleng'
+    command: 'jf rt ping'
+
+- task: JFrogAudit@1
+  inputs:
+    xrayConnection: 'jf-rk-soleng-xr'
+    watchesSource: 'project'
+    project: 'frogs-us'
+    allowFailBuild: true
+
+- task: JFrogNpm@1
+  inputs:
+    command: 'ci'
+    artifactoryConnection: 'jf-rk-soleng-rt'
+    sourceRepo: 'frogs-npm-dev-virtual'
+    collectBuildInfo: true
+    threads: '1'
+    buildName: '$(Build.DefinitionName)'
+    buildNumber: '$(Build.BuildNumber)'
+    projectKey: 'frogs-us'
+    includeEnvVars: true
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'jf-rk-soleng-docker'
+    repository: '${TARGET_DOCKER_REPO}/node-goat'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+
+- task: JFrogDocker@1
+  inputs:
+    command: 'Scan'
+    xrayConnection: 'jf-rk-soleng-xr'
+    imageName: '$(JF_URL)/$(TARGET_DOCKER_REPO)/node-goat:$(Build.BuildNumber)'
+    watchesSource: 'project'
+    project: 'frogs-us'
+    allowFailBuild: true
+    allowBypassArchiveLimits: false
+    threads: '3'
+    skipLogin: false'
+    projectKey: 'frogs-us'
+    includeEnvVars: true
+
+- task: CmdLine@2
+  inputs:
+    script: 'sleep 60'
+
+- task: JFrogBuildScan@1
+  inputs:
+    xrayConnection: 'jf-rk-soleng-xr'
+    buildName: '$(Build.DefinitionName)'
+    buildNumber: '$(Build.BuildNumber)'
+    projectKey: 'frogs-us'
+    allowFailBuild: true
+    vuln: true
