@@ -61,6 +61,8 @@ config/*.yml
 
 # System Files
 .DS_Store
+*.bak
+.backup
 
 # Logs
 logs
