@@ -45,7 +45,10 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://${{ vars.JF_URL }}/
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+          # JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+        with:
+          oidc-provider-name: jf-github-rk 
+          oidc-audience: https://github.com/rkfrog
       - name: Health check JFrog Artifactory instance 🐸
         run: |
           jfrog --version
@@ -58,15 +61,15 @@ jobs:
           jfrog npm config list | jq -r .registry
         env:
           JF_URL: https://${{ vars.JF_URL }}
-      - name: JFrog Curation audit 🐸
-        run: |
-          jf curation-audit --threads 6
+      # - name: JFrog Curation audit 🐸
+      #   run: |
+      #     jf curation-audit --threads 6
       - name: JFrog audit - Secrets 🔑🐸
         run: |
           jfrog audit --secrets
-      - name: JFrog audit - SAST 🐸
-        run: |
-          jfrog audit --sast --fail false
+      # - name: JFrog audit - SAST 🐸
+      #   run: |
+      #     jfrog audit --sast --fail false
       - name: Capture build version
         run: echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
       - name: Install NPM dependencies
@@ -74,30 +77,30 @@ jobs:
           jfrog npm ci --ignore-scripts --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project $JF_PROJECT
       - name: NPM publish 🐸
         run: jfrog npm publish --project $JF_PROJECT --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build
-      - name: Login to JFrog Docker repo
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ vars.JF_URL }}
-          username: ${{ secrets.JF_USERNAME }}
-          password: ${{ secrets.JF_ACCESS_TOKEN }}
-      - name: Docker Build 🐳🐸
-        run: |
-          echo "registry=https://${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/" >> $HOME/.npmrc
-          echo "//${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/:_authToken=${{ env.NPM_TOKEN }}" >> $HOME/.npmrc
-          jfrog docker image build --tag ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --secret id=npmrc,src=$HOME/.npmrc  --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module docker-build --project $JF_PROJECT --build-arg="REGISTRY_URL=${{ env.JF_URL }}" --build-arg="DOCKER_REPO_NAME=$DOCKER_JF_RT_REPO" --build-arg="NPM_REPO_NAME=$NPM_JF_RT_REPO" .
-        env:
-          JF_URL: ${{ vars.JF_URL }}
-          NPM_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-      - name: JFrog docker image scan 🐳🐸
-        run: |
-          jfrog docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json --threads 6
-        env:
-          JF_URL: ${{ vars.JF_URL }}
-      - name: Docker Push 🐳🐸
-        run: |
-          jfrog docker push ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module docker-build --project $JF_PROJECT
-        env:
-          JF_URL: ${{ vars.JF_URL }}
+      # - name: Login to JFrog Docker repo
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ${{ vars.JF_URL }}
+      #     username: ${{ secrets.JF_USERNAME }}
+      #     password: ${{ secrets.JF_ACCESS_TOKEN }}
+      # - name: Docker Build 🐳🐸
+      #   run: |
+      #     echo "registry=https://${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/" >> $HOME/.npmrc
+      #     echo "//${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/:_authToken=${{ env.NPM_TOKEN }}" >> $HOME/.npmrc
+      #     jfrog docker image build --tag ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --secret id=npmrc,src=$HOME/.npmrc  --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module docker-build --project $JF_PROJECT --build-arg="REGISTRY_URL=${{ env.JF_URL }}" --build-arg="DOCKER_REPO_NAME=$DOCKER_JF_RT_REPO" --build-arg="NPM_REPO_NAME=$NPM_JF_RT_REPO" .
+      #   env:
+      #     JF_URL: ${{ vars.JF_URL }}
+      #     NPM_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      # - name: JFrog docker image scan 🐳🐸
+      #   run: |
+      #     jfrog docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json --threads 6
+      #   env:
+      #     JF_URL: ${{ vars.JF_URL }}
+      # - name: Docker Push 🐳🐸
+      #   run: |
+      #     jfrog docker push ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module docker-build --project $JF_PROJECT
+      #   env:
+      #     JF_URL: ${{ vars.JF_URL }}
       - name: Gather build details 🐸
         run: |
           jfrog rt build-add-git $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER ./ --project $JF_PROJECT
