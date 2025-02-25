@@ -1,7 +1,7 @@
 stages:
   - npm_build
 
-include: # files at https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/ 
+include:
   - remote: "https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/.setup-jfrog-unix.yml"
 
 build-job:
@@ -16,4 +16,5 @@ build-job:
     # NPM_JF_RT_REPO: ""
     # DOCKER_JF_RT_REPO: ""
   script:
+    - !reference [.setup_jfrog, script] # install JF-CLI v2
     - jf --version
