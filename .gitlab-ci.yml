@@ -1,23 +1,19 @@
+stages:
+  - build
+
+include: # files at https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/ 
+  - remote: "https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/.setup-jfrog-unix.yml"
+
 build-job:
-  stage: build
+  stage: npm_build
+  image: node:lts
+  variables:
+    JF_URL: "${JF_URL}"
+    JF_USERNAME: "${JF_USERNAME}"
+    BUILD_NAME: "gitlabs-node-goat"
+    BUILD_ID: "${CI_PIPELINE_ID}"
+    JF_PROJECT: "${JF_PROJECT}"
+    # NPM_JF_RT_REPO: ""
+    # DOCKER_JF_RT_REPO: ""
   script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
-
-test-job1:
-  stage: test
-  script:
-    - echo "This job tests something"
-
-test-job2:
-  stage: test
-  script:
-    - echo "This job tests something, but takes more time than test-job1."
-    - echo "After the echo commands complete, it runs the sleep command for 10 seconds"
-    - echo "which simulates a test that runs 10 seconds longer than test-job1"
-    - sleep 10
-
-deploy-prod:
-  stage: deploy
-  script:
-    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-  environment: production
+    - jf --version
