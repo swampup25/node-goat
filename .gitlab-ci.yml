@@ -4,17 +4,26 @@ stages:
 include:
   - remote: "https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/.setup-jfrog-unix.yml"
 
+variables:
+  JF_URL: "${JF_URL}"
+  JF_USERNAME: "${JF_USERNAME}"
+  BUILD_NAME: "${CI_PIPELINE_NAME	}"
+  BUILD_ID: "${CI_PIPELINE_ID}"
+  JF_PROJECT: "${JF_PROJECT}"
+  # NPM_JF_RT_REPO: ""
+  # DOCKER_JF_RT_REPO: ""
+
 build-job:
   stage: npm_build
   image: node:lts
-  variables:
-    JF_URL: "${JF_URL}"
-    JF_USERNAME: "${JF_USERNAME}"
-    BUILD_NAME: "gitlabs-node-goat"
-    BUILD_ID: "${CI_PIPELINE_ID}"
-    JF_PROJECT: "${JF_PROJECT}"
-    # NPM_JF_RT_REPO: ""
-    # DOCKER_JF_RT_REPO: ""
   script:
+    - echo "Build triggered by ${CI_COMMIT_SHA} - ${} on ${CI_COMMIT_BRANCH} by ${CI_COMMIT_AUTHOR}"
     - !reference [.setup_jfrog, script] # install JF-CLI v2
     - jf --version
+    - ls -la ${CI_BUILDS_DIR}
+    - jf rt ping
+    - jf c show
+    # - jf npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
+    # - jf npm config set registry $JF_URL/artifactory/api/npm/$NPM_JF_RT_REPO/
+    # - jf npm config list | jq -r .registry
+    # - echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
