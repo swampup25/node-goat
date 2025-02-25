@@ -1,5 +1,5 @@
 stages:
-  - build
+  - npm_build
 
 include: # files at https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/ 
   - remote: "https://releases.jfrog.io/artifactory/jfrog-cli/gitlab/v2/.setup-jfrog-unix.yml"
