@@ -27,9 +27,6 @@ variables:
   # NPM_JF_RT_REPO: ""
   # DOCKER_JF_RT_REPO: ""
 
-
-OIDC:
-
 build-job:
   stage: npm_build
   image: node:lts
