@@ -53,7 +53,7 @@ build-job:
     - jf rt ping
     #### NPM Confguration
     - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO}
-    - jf npm config set registry $JF_URL/artifactory/api/npm/${NPM_JF_RT_REPO}/
+    - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
     - export NPM_PACKAGE_BUILD_VERSION=$(cat /builds/${CI_PROJECT_PATH}/package.json | jq -r ."version")
     #### OSS JFrog Curation Audit
@@ -65,6 +65,7 @@ build-job:
     #### Install NPM dependencies
     - jf npm ci --ignore-scripts --module npm-build
     #### NPM publish
+    - jf npm config list
     - jf npm publish --module npm-build
     #### JFrog Build Publish
     - jf rt build-add-git ./
