@@ -68,7 +68,7 @@ build-job:
     - jf npm config list
     - jf npm publish --module npm-build --project=${JF_PROJECT}
     #### JFrog Build Publish
-    - jf rt build-add-git ./
+    - jf rt build-add-git ./ --project=${JF_PROJECT}
     - jf rt build-collect-env 
     - jf rt build-publish --project=${JF_PROJECT}
     #### JFrog Build Scan
