@@ -1,3 +1,11 @@
+workflow:
+  name: "gitlab-jfrog-node-goat-ci"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+
 stages:
   - npm_build
 
@@ -17,12 +25,15 @@ build-job:
   stage: npm_build
   image: node:lts
   script:
-    - echo "Build triggered by "${CI_COMMIT_SHA}" on ${CI_COMMIT_BRANCH} by ${CI_COMMIT_AUTHOR}"
+    - echo "Build triggered by commit - "${CI_COMMIT_SHA}" on branch - ${CI_COMMIT_BRANCH} by ${CI_COMMIT_AUTHOR}"
     - !reference [.setup_jfrog, script] # install JF-CLI v2
     - jf --version
+    - echo "JF_URL=${JF_URL}"
     - ls -la ${CI_BUILDS_DIR}
-    - jf rt ping
+    - pwd
+    - env
     - jf c show
+    - jf rt ping
     # - jf npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
     # - jf npm config set registry $JF_URL/artifactory/api/npm/$NPM_JF_RT_REPO/
     # - jf npm config list | jq -r .registry
