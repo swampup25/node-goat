@@ -63,14 +63,14 @@ build-job:
     #### JFrog audit - SAST
     - jf audit --sast --fail false
     #### Install NPM dependencies
-    - jf npm ci --ignore-scripts --module npm-build
+    - jf npm ci --ignore-scripts --module npm-build --project=${JF_PROJECT}
     #### NPM publish
     - jf npm config list
-    - jf npm publish --module npm-build
+    - jf npm publish --module npm-build --project=${JF_PROJECT}
     #### JFrog Build Publish
     - jf rt build-add-git ./
-    - jf rt build-collect-env
-    - jf rt build-publish
+    - jf rt build-collect-env 
+    - jf rt build-publish --project=${JF_PROJECT}
     #### JFrog Build Scan
     - sleep 60
-    - jf bs --vuln=true --format json
+    - jf bs --vuln=true --project=${JF_PROJECT} --format json
