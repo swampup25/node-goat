@@ -47,7 +47,8 @@ build-job:
     - jf --version
     - ls -la /builds/${CI_PROJECT_PATH}
     # - env
-    - jf c add --url https://${JF_URL} --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true
+    - jf c rm 
+    - jf c add setup-jfrog-gitlab-ci-server-${CI_JOB_ID} --url https://${JF_URL} --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
     - jf c show
     - jf rt ping
     # - jf npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
