@@ -33,7 +33,7 @@ build-job:
   script:
     - echo "Build triggered by commit - "${CI_COMMIT_SHA}" on branch - ${CI_COMMIT_BRANCH} by ${CI_COMMIT_AUTHOR}"
     - |
-      JF_ACCESS_TOKEN=$(curl -X POST -H "Content-Type: application/json" "https://${JF_URL}/access/api/v1/oidc/token -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${GITLAB_OIDC_TOKEN}\", \"provider_name\": \"rkfrog-gitlab\"}")
+      JF_ACCESS_TOKEN=$(curl -X POST -H "Content-Type: application/json" "https://${JF_URL}/access/api/v1/oidc/token" -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${GITLAB_OIDC_TOKEN}\", \"provider_name\": \"rkfrog-gitlab\"}")
       echo ${JF_ACCESS_TOKEN}
     - !reference [.setup_jfrog, script] # install JF-CLI v2
     - jf --version
