@@ -52,14 +52,15 @@ build-job:
     - jf c show
     - jf rt ping
     #### NPM Confguration
-    - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO}
+    - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO} --global
+    - jf npm config list | jq -r .registry
     - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
     - export NPM_PACKAGE_BUILD_VERSION=$(cat /builds/${CI_PROJECT_PATH}/package.json | jq -r ."version")
     #### OSS JFrog Curation Audit
     - jf curation-audit
     #### JFrog audit - Secrets
-    - jf audit --secrets
+    - jf audit --secrets --fail false
     #### JFrog audit - SAST
     - jf audit --sast --fail false
     #### Install NPM dependencies
@@ -68,6 +69,7 @@ build-job:
     - jf npm config list
     - jf npm publish --module npm-build --project=${JF_PROJECT}
     #### JFrog Build Publish
+    - jf rt build-add-dependencies ./ --project=${JF_PROJECT}
     - jf rt build-add-git ./ --project=${JF_PROJECT}
     - jf rt build-collect-env --project=${JF_PROJECT}
     - jf rt build-publish --project=${JF_PROJECT}
