@@ -20,9 +20,9 @@ include:
 variables:
   JF_URL: "${JF_URL}"
   JF_USERNAME: "${JF_USERNAME}"
-  BUILD_NAME: "${CI_PIPELINE_NAME	}"
-  BUILD_ID: "${CI_PIPELINE_ID}"
-  JF_PROJECT: "${JF_PROJECT}"
+  # JFROG_CLI_BUILD_NAME: "${CI_PIPELINE_NAME}"
+  # JFROG_CLI_BUILD_NUMBER: "${CI_PIPELINE_ID}"
+  JFROG_CLI_BUILD_PROJECT: "${JF_PROJECT}"
   # JFROG_CLI_LOG_LEVEL: "DEBUG"
   NPM_JF_RT_REPO: "$NPM_JF_RT_REPO"
   DOCKER_JF_RT_REPO: "$DOCKER_JF_RT_REPO"
@@ -45,7 +45,11 @@ build-job:
       fi
     #### Install JFrog CLI
     - echo "Installing JFrog CLI"
+    - echo $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
     - !reference [.setup_jfrog, script]
+    - export JFROG_CLI_BUILD_NAME="${CI_PIPELINE_NAME}"
+    - export JFROG_CLI_BUILD_NUMBER="${CI_PIPELINE_ID}"
+    - echo $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
     - jf --version
     #### JFrog CLI Confguration
     - jf c add setup-jfrog-gitlab-ci-server-${CI_JOB_ID} --url https://${JF_URL} --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
@@ -63,14 +67,14 @@ build-job:
     # #### JFrog audit - SAST
     # - jf audit --sast --fail false
     #### Install NPM dependencies
-    - jf npm ci --ignore-scripts --project=${JF_PROJECT}
+    - jf npm ci --ignore-scripts --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### NPM publish
-    - jf rt build-add-dependencies ./ --project=${JF_PROJECT}
-    - jf rt build-add-git ./ --project=${JF_PROJECT}
-    - jf rt build-collect-env --project=${JF_PROJECT}
-    - jf npm publish --project=${JF_PROJECT}
+    - jf rt build-add-dependencies ./ --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-add-git ./ --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-collect-env --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf npm publish --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Publish
-    - jf rt build-publish --project=${JF_PROJECT}
+    - jf rt build-publish --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Scan
     - sleep 60
     - jf bs --vuln=true --project=${JF_PROJECT} --format json
