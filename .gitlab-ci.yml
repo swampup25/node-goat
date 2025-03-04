@@ -57,6 +57,7 @@ build-job:
     - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO} --global
     - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
+    - cat ./jfrog/.npmrc
     - export NPM_PACKAGE_BUILD_VERSION=$(cat /builds/${CI_PROJECT_PATH}/package.json | jq -r ."version")
     # #### OSS JFrog Curation Audit
     # - jf curation-audit
@@ -65,14 +66,14 @@ build-job:
     # #### JFrog audit - SAST
     # - jf audit --sast --fail false
     #### Install NPM dependencies
-    - jf npm ci --ignore-scripts --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf npm ci --ignore-scripts --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### NPM publish
     # - jf rt build-add-dependencies ./ --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf rt build-add-git ./ --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf rt build-collect-env --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf npm publish --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-add-git ./ --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-collect-env --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Publish
-    - jf rt build-publish --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Scan
     - sleep 60
     - jf bs --vuln=true --project=${JF_PROJECT} --format json
