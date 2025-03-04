@@ -43,11 +43,11 @@ build-job:
       fi
     #### Install JFrog CLI
     - echo "Installing JFrog CLI"
-    - echo $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
+    - echo ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
     - !reference [.setup_jfrog, script]
     - export JFROG_CLI_BUILD_NAME="${CI_PIPELINE_NAME}"
     - export JFROG_CLI_BUILD_NUMBER="${CI_PIPELINE_ID}"
-    - echo $JFROG_CLI_BUILD_NAME $JFROG_CLI_BUILD_NUMBER
+    - echo ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
     - jf --version
     #### JFrog CLI Confguration
     - jf c add setup-jfrog-gitlab-ci-server-${CI_JOB_ID} --url https://${JF_URL} --access-token ${JF_ACCESS_TOKEN} --interactive=false --overwrite=true 
@@ -58,8 +58,7 @@ build-job:
     - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
     - ls -la /builds/${CI_PROJECT_PATH}
-    - ls -la /builds/${CI_PROJECT_PATH}/.jfrog
-    # - cat /builds/${CI_PROJECT_PATH}/.jfrog/.npmrc
+    - cat /builds/${CI_PROJECT_PATH}/.jfrog/projects/npm.yaml
     - export NPM_PACKAGE_BUILD_VERSION=$(cat /builds/${CI_PROJECT_PATH}/package.json | jq -r ."version")
     # #### OSS JFrog Curation Audit
     # - jf curation-audit
@@ -68,14 +67,14 @@ build-job:
     # #### JFrog audit - SAST
     # - jf audit --sast --fail false
     #### Install NPM dependencies
-    - jf npm ci --ignore-scripts --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf npm ci --ignore-scripts --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER} --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### NPM publish
     # - jf rt build-add-dependencies ./ --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf rt build-add-git ./ $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf rt build-collect-env --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
-    - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-add-git ./ ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER} --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Publish
-    - jf rt build-publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number $JFROG_CLI_BUILD_NUMBER --project=${JFROG_CLI_BUILD_PROJECT}
+    - jf rt build-publish ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Scan
     - sleep 60
-    - jf bs --vuln=true --project=${JF_PROJECT} --format json
+    - jf bs ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --vuln=true --project=${JF_PROJECT} --format json
