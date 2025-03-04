@@ -66,10 +66,9 @@ build-job:
     #### Install NPM dependencies
     - jf npm ci --ignore-scripts --module npm-build --project=${JF_PROJECT}
     #### NPM publish
-    - jf npm config list
-    - jf npm publish --module npm-build --project=${JF_PROJECT}
+    - jf npm publish --project=${JF_PROJECT}
     #### JFrog Build Publish
-    - jf rt build-add-dependencies ./ --project=${JF_PROJECT}
+    - jf rt build-add-dependencies ./ --module npm-build --project=${JF_PROJECT}
     - jf rt build-add-git ./ --project=${JF_PROJECT}
     - jf rt build-collect-env --project=${JF_PROJECT}
     - jf rt build-publish --project=${JF_PROJECT}
