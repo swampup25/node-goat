@@ -69,7 +69,7 @@ build-job:
     - jf npm publish --module npm-build --project=${JF_PROJECT}
     #### JFrog Build Publish
     - jf rt build-add-git ./ --project=${JF_PROJECT}
-    - jf rt build-collect-env 
+    - jf rt build-collect-env --project=${JF_PROJECT}
     - jf rt build-publish --project=${JF_PROJECT}
     #### JFrog Build Scan
     - sleep 60
