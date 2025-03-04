@@ -57,7 +57,8 @@ build-job:
     - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO}
     - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
-    - cat /builds/${CI_PROJECT_PATH}/.jfrog/.npmrc
+    - ls -la /builds/${CI_PROJECT_PATH}
+    # - cat /builds/${CI_PROJECT_PATH}/.jfrog/.npmrc
     - export NPM_PACKAGE_BUILD_VERSION=$(cat /builds/${CI_PROJECT_PATH}/package.json | jq -r ."version")
     # #### OSS JFrog Curation Audit
     # - jf curation-audit
