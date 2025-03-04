@@ -54,7 +54,7 @@ build-job:
     - jf c show
     - jf rt ping
     #### NPM Confguration
-    - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO} --global true
+    - jf npm-config --repo-deploy=${NPM_JF_RT_REPO} -repo-resolve=${NPM_JF_RT_REPO}
     - jf npm config set registry https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/
     - jf npm config list | jq -r .registry
     - cat /builds/${CI_PROJECT_PATH}/jfrog/.npmrc
