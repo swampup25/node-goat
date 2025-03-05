@@ -43,7 +43,6 @@ build-job:
       fi
     #### Install JFrog CLI
     - echo "Installing JFrog CLI"
-    - echo ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
     - !reference [.setup_jfrog, script]
     - export JFROG_CLI_BUILD_NAME="${CI_PIPELINE_NAME}"
     - export JFROG_CLI_BUILD_NUMBER="${CI_PIPELINE_ID}"
@@ -76,4 +75,4 @@ build-job:
     - jf rt build-publish ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Scan
     - sleep 60
-    - jf bs ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --vuln=true --project=${JF_PROJECT} --format json
+    - jf bs ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --vuln=true --project=${JFROG_CLI_BUILD_PROJECT} --format json
