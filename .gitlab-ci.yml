@@ -71,6 +71,14 @@ build-job:
     - jf rt build-add-git ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} ./ --project=${JFROG_CLI_BUILD_PROJECT}
     - jf rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
     - jf npm publish --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER} --module npm-build --project=${JFROG_CLI_BUILD_PROJECT}
+    #### Login to JFrog Docker repo
+    - echo "${JF_ACCESS_TOKEN}" | docker login ${JF_URL} -u ${JF_USERNAME} --password-stdin
+    #### Docker Build
+    - echo "registry=https://${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/" >> $HOME/.npmrc
+    - echo "//${JF_URL}/artifactory/api/npm/${NPM_JF_RT_REPO}/:_authToken=${JF_ACCESS_TOKEN}" >> $HOME/.npmrc
+    - jf docker image build --tag ${JF_URL}/$DOCKER_JF_RT_REPO/node-goat:${NPM_PACKAGE_BUILD_VERSION} --secret id=npmrc,src=$HOME/.npmrc --module docker-build --project=${JFROG_CLI_BUILD_PROJECT} --build-arg="REGISTRY_URL=${JF_URL}" --build-arg="DOCKER_REPO_NAME=${DOCKER_JF_RT_REPO}" --build-arg="NPM_REPO_NAME=$NPM_JF_RT_REPO" .
+    # - jfrog docker scan ${JF_URL}/$DOCKER_JF_RT_REPO/node-goat:${NPM_PACKAGE_BUILD_VERSION} --format json --threads 6
+    - jf docker push ${JF_URL}/$DOCKER_JF_RT_REPO/node-goat:${NPM_PACKAGE_BUILD_VERSION} --module docker-build --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Publish
     - jf rt build-publish ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --project=${JFROG_CLI_BUILD_PROJECT}
     #### JFrog Build Scan
