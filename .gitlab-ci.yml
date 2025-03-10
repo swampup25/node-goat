@@ -88,10 +88,15 @@ variables:
 #     - jf bs ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --vuln=true --project=${JFROG_CLI_BUILD_PROJECT} --format json
 
 docker-build-job:
-  image: docker:latest
+  image: docker:28.0.1
   stage: docker_build
-  script:
+  services:
+    - docker:28.0.1-dind
+  before_script:
     - docker info
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
     - docker --version
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
     - \. "$HOME/.nvm/nvm.sh"
