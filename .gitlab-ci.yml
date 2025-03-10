@@ -98,10 +98,7 @@ docker-build-job:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
     - docker --version
-    - apt-get -y update && apt-get -y install jq curl
-    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-    - \. "$HOME/.nvm/nvm.sh"
-    - nvm install ${NPM_VERSION}
+    - apk add --update jq curl npm
     - node -v
     # - echo "${JF_ACCESS_TOKEN}" | docker login ${JF_URL} -u ${JF_USERNAME} --password-stdin
     # - jf docker build -t $IMAGE_NAME:$IMAGE_TAG .
