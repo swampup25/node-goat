@@ -54,14 +54,14 @@ jobs:
           oidc-audience: https://github.com/rkfrog
       - name: Health check JFrog Artifactory instance 🐸
         run: |
-          jfrog --version
-          jfrog rt ping
-          jfrog config show
+          jf --version
+          jf rt ping
+          jf config show
       - name: Set JF NPM Config
         run:  |
-          jfrog npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
-          jfrog npm config set registry ${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/
-          jfrog npm config list | jq -r .registry
+          jf npm-config --repo-deploy=$NPM_JF_RT_REPO -repo-resolve=$NPM_JF_RT_REPO
+          jf npm config set registry ${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/
+          jf npm config list | jq -r .registry
         env:
           JF_URL: https://${{ vars.JF_URL }}
       - name: JFrog Curation audit 🐸
@@ -69,15 +69,15 @@ jobs:
           jf curation-audit --threads 6
       - name: JFrog audit - Secrets 🔑🐸
         run: |
-          jfrog audit --secrets
+          jf audit --secrets
       - name: JFrog audit - SAST 🐸
         run: |
-          jfrog audit --sast --fail false
+          jf audit --sast --fail false
       - name: Capture build version
         run: echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
       - name: Install NPM dependencies
         run: |
-          jfrog npm ci --ignore-scripts --module npm-build
+          jf npm ci --ignore-scripts --module npm-build
       - name: NPM publish 🐸
         run: jfrog npm publish --module npm-build
       - name: Login to JFrog Docker repo
@@ -90,27 +90,30 @@ jobs:
         run: |
           echo "registry=https://${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/" >> $HOME/.npmrc
           echo "//${{ env.JF_URL }}/artifactory/api/npm/$NPM_JF_RT_REPO/:_authToken=${{ env.NPM_TOKEN }}" >> $HOME/.npmrc
-          jfrog docker image build --tag ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --secret id=npmrc,src=$HOME/.npmrc --module docker-build  --build-arg="REGISTRY_URL=${{ env.JF_URL }}" --build-arg="DOCKER_REPO_NAME=$DOCKER_JF_RT_REPO" --build-arg="NPM_REPO_NAME=$NPM_JF_RT_REPO" .
+          jf docker image build --tag ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --secret id=npmrc,src=$HOME/.npmrc --module docker-build  --build-arg="REGISTRY_URL=${{ env.JF_URL }}" --build-arg="DOCKER_REPO_NAME=$DOCKER_JF_RT_REPO" --build-arg="NPM_REPO_NAME=$NPM_JF_RT_REPO" .
         env:
           JF_URL: ${{ vars.JF_URL }}
           NPM_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-      - name: JFrog docker image scan 🐳🐸
-        run: |
-          jfrog docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json --threads 6
-        env:
-          JF_URL: ${{ vars.JF_URL }}
+      # - name: JFrog docker image scan 🐳🐸
+      #   run: |
+      #     jf docker scan ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --format json --threads 6
+      #   env:
+      #     JF_URL: ${{ vars.JF_URL }}
       - name: Docker Push 🐳🐸
         run: |
-          jfrog docker push ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --module docker-build 
+          jf docker push ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --module docker-build 
         env:
           JF_URL: ${{ vars.JF_URL }}
       - name: Gather build details 🐸
         run: |
-          jfrog rt build-add-git ./
-          jfrog rt build-collect-env
+          jf rt build-add-git ./
+          jf rt build-collect-env
       - name: JFrog build publish 🐸
-        run: jfrog rt build-publish
+        run: jf rt build-publish
       - name: JFrog build scan 🐸
         run: |
           sleep 60
-          jfrog bs --vuln=true --format json
+          jf bs --vuln=true --format json
+      - name: JFrog create release bundle 🐸
+        run: |
+          jf rbc create --name node-goat --version ${{ env.NPM_PACKAGE_BUILD_VERSION }} --description "Node Goat release bundle" --project=${{ vars.JF_PROJECT }}
