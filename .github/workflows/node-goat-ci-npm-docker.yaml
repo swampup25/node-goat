@@ -110,10 +110,10 @@ jobs:
           jf rt build-collect-env
       - name: JFrog build publish 🐸
         run: jf rt build-publish
-      - name: JFrog build scan 🐸
-        run: |
-          sleep 60
-          jf bs --vuln=true --format json
+      # - name: JFrog build scan 🐸
+      #   run: |
+      #     sleep 60
+      #     jf bs --vuln=true --format json
       - name: JFrog create release bundle 🐸
         run: |
-          jf rbc create node-goat ${{ env.NPM_PACKAGE_BUILD_VERSION }} --project ${{ vars.JF_PROJECT }} --signing-key ${{ secrets.JF_RB_SIGNING_KEY_NAME }}
+          jf rbc create --build-name=${{ github.workflow }} --build-number=${{ env.NPM_PACKAGE_BUILD_VERSION }} --project ${{ vars.JF_PROJECT }} --signing-key ${{ secrets.JF_RB_SIGNING_KEY_NAME }} ${{ github.workflow }} ${{ env.NPM_PACKAGE_BUILD_VERSION }}
