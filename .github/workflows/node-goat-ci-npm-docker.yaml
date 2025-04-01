@@ -116,4 +116,4 @@ jobs:
       #     jf bs --vuln=true --format json
       - name: JFrog create release bundle 🐸
         run: |
-          jf rbc --build-name=${{ env.JFROG_CLI_BUILD_NAME }} --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} --project ${{ vars.JF_PROJECT }} --signing-key ${{ secrets.JF_RB_SIGNING_KEY_NAME }} ${{ github.workflow }} ${{ env.NPM_PACKAGE_BUILD_VERSION }}
+          jf rbc --build-name=${{ env.JFROG_CLI_BUILD_NAME }} --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} --project=${{ vars.JF_PROJECT }} --signing-key=${{ secrets.JF_RB_SIGNING_KEY_NAME }} ${{ github.workflow }} ${{ env.NPM_PACKAGE_BUILD_VERSION }}
