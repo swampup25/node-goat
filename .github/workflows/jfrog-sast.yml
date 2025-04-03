@@ -9,6 +9,7 @@
 name: "JFrog SAST Scan"
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
   pull_request:
@@ -38,10 +39,10 @@ jobs:
       uses: actions/setup-node@v4
 
     - name: JFrog CLI setup 🐸
-        uses: jfrog/setup-jfrog-cli@v4
-        env:
-          JF_URL: https://${{ vars.JF_URL }}/
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://${{ vars.JF_URL }}/
+        JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 
     - name: Run JFrog SAST
       run: |
