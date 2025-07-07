@@ -96,7 +96,7 @@ jobs:
             --package-repo-name $NPM_JF_RT_REPO  \
             --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk \
             --predicate ./sign_npm.json --predicate-type https://jfrog.com/evidence/signature/v1 
-          echo '🔎 NPM build Evidence attached: `signature` 🔏 '
+          echo '🔎 NPM build Evidence attached: `signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
       - name: Login to JFrog Docker repo
         uses: docker/login-action@v3
         with:
@@ -125,12 +125,12 @@ jobs:
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_docker.json
           jf evd create \
-            --package-name "node-goat" \
+            --package-name node-goat \
             --package-version ${{ env.NPM_PACKAGE_BUILD_VERSION }} \
             --package-repo-name $DOCKER_JF_RT_REPO  \
             --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk \
             --predicate ./sign_docker.json --predicate-type https://jfrog.com/evidence/signature/v1 
-          echo '🔎 Docker build evidence attached: `signature` 🔏 '
+          echo '🔎 Docker build evidence attached: `signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
       - name: Gather build details 🐸
         run: |
           jf rt build-add-git ./
@@ -141,10 +141,11 @@ jobs:
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_build.json
           jf evd create \
+            --predicate ./sign_build.json --predicate-type https://jfrog.com/evidence/build-signature/v1 \
             --build-name ${{ env.JFROG_CLI_BUILD_NAME }} \
             --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }} \
-            --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk \
-            --predicate ./sign_build.json --predicate-type https://jfrog.com/evidence/build-signature/v1 \
+            --project ${{ vars.JF_PROJECT }} \
+            --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk  
           echo '🔎 Evidence attached: `build-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
       - name: JFrog build scan 🐸
         run: |
@@ -153,3 +154,13 @@ jobs:
       - name: JFrog create release bundle 🐸
         run: |
           jf release-bundle-create --spec=rbv2_build_spec.json --spec-vars="build-name=${{ env.JFROG_CLI_BUILD_NAME }};build-number=${{ env.JFROG_CLI_BUILD_NUMBER }};project-key=${{ vars.JF_PROJECT }}" --sync=true --signing-key=${{ secrets.JF_RB_SIGNING_KEY_NAME }} ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.NPM_PACKAGE_BUILD_VERSION }}
+      - name: Sign Release Bundle Evidence 🐸
+        run: |
+          echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_rb.json
+          jf evd create \
+            --predicate ./sign_rb.json --predicate-type https://jfrog.com/evidence/build-signature/v1 \
+            --release-bundle  ${{ env.JFROG_CLI_BUILD_NAME }} \
+            --release-bundle-version ${{ env.NPM_PACKAGE_BUILD_VERSION }} \
+            --project ${{ vars.JF_PROJECT }} \
+            --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk  
+          echo '🔎 Evidence attached: `release-bundle-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
