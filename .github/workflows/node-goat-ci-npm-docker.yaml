@@ -30,7 +30,7 @@ env:
   JF_URL: ${{ vars.JF_URL }}
 jobs:
   npm-docker-build-and-publish-dev:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - run: |
           echo "The job was triggered by a ${{ github.event_name }} event."
