@@ -125,7 +125,7 @@ jobs:
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_docker.json
           jf evd create \
-            --package-name $DOCKER_JF_RT_REPO/node-goat \
+            --package-name "$DOCKER_JF_RT_REPO/node-goat" \
             --package-version ${{ env.NPM_PACKAGE_BUILD_VERSION }} \
             --package-repo-name $DOCKER_JF_RT_REPO  \
             --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk \
