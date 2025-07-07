@@ -83,7 +83,7 @@ jobs:
       - name: Install NPM dependencies
         run: |
           jf npm ci --ignore-scripts --module npm-build
-      - name: Evidence Publish for NPM
+      - name: Evidence Publish for NPM 🐸
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_npm.json
           jf evd create \
@@ -119,7 +119,7 @@ jobs:
           jf docker push ${{ env.JF_URL }}/$DOCKER_JF_RT_REPO/node-goat:${{ env.NPM_PACKAGE_BUILD_VERSION }} --module docker-build 
         env:
           JF_URL: ${{ vars.JF_URL }}
-      - name: Evidence Publish for Docker
+      - name: Evidence Publish for Docker 🐳🐸
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_docker.json
           jf evd create \
@@ -135,7 +135,7 @@ jobs:
           jf rt build-collect-env
       - name: JFrog build publish 🐸
         run: jf rt build-publish
-      - name: Sign Build Evidence
+      - name: Sign Build Evidence 🐸
         run: |
           echo '{ "actor": "${{ github.actor }}", "date": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'" }' > sign_build.json
           jf evd create \
