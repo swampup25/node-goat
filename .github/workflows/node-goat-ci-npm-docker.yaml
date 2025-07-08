@@ -146,7 +146,7 @@ jobs:
             --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }} \
             --project ${{ vars.JF_PROJECT }} \
             --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk  
-          echo '🔎 Evidence attached: `build-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
+          echo '🔎 Build Evidence attached: `build-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
       - name: JFrog build scan 🐸
         run: |
           sleep 60
@@ -163,4 +163,4 @@ jobs:
             --release-bundle-version ${{ env.NPM_PACKAGE_BUILD_VERSION }} \
             --project ${{ vars.JF_PROJECT }} \
             --key "${{ secrets.JF_EVD_PRIVATE_KEY }}"  --key-alias evidence-signing-rk  
-          echo '🔎 Evidence attached: `release-bundle-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
+          echo '🔎 Release Bundle Evidence attached: `release-bundle-signature` 🔏 ' >> $GITHUB_STEP_SUMMARY
