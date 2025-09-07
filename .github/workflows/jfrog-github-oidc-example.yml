@@ -121,6 +121,7 @@ jobs:
         continue-on-error: false
         run: |
           jf rt ping
+          jf npmc --repo-deploy=${{ env.RT_REPO_NPM_VIRTUAL}} --repo-resolve=${{ env.RT_REPO_NPM_VIRTUAL}}
           jf npm install --build-name=${{ env.BUILD_NAME }} --build-number=${{ env.BUILD_ID }} 
      
       # TODO: Lab 2.5 - Step 5 - Publish npm package to Artifactory with BuildInfo
